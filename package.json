@@ -1,21 +1,21 @@
 {
-  "name": "foodflow-auckland",
+  "name": "foodflow-platform-foundation",
   "version": "0.1.0",
   "private": true,
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "data:migrate": "DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com} DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-v4-flash} DATABASE_URL=${DATABASE_URL:-sqlite:///./foodflow.db} DEMO_MODE=${DEMO_MODE:-true} AGENT_TRANSPORT=${AGENT_TRANSPORT:-replay} .venv/bin/python -m backend.app.seed.seed",
-    "dev:backend": "DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com} DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-v4-flash} DATABASE_URL=${DATABASE_URL:-sqlite:///./foodflow.db} DEMO_MODE=${DEMO_MODE:-true} AGENT_TRANSPORT=${AGENT_TRANSPORT:-replay} .venv/bin/python -m uvicorn backend.app.main:app --reload --port 8000",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
+    "dev:backend": "./scripts/dev_backend.sh",
     "dev:frontend": "npm --prefix frontend run dev",
+    "backend:test": "uv run pytest backend/tests",
     "frontend:format": "npm --prefix frontend run format:check",
     "frontend:lint": "npm --prefix frontend run lint",
     "frontend:typecheck": "npm --prefix frontend run typecheck",
     "frontend:test": "npm --prefix frontend test",
-    "journey:smoke": "./scripts/e2e.sh"
-  },
-  "devDependencies": {
-    "@playwright/test": ">=1.51.1 <2"
+    "quality": "./scripts/quality_gate.sh"
   }
 }

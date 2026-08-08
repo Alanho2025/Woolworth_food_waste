@@ -1,7 +1,0 @@
-{
-  "initial_candidates": ["COM-B", "COM-A"],
-  "initial_driver_id": "DRV-1",
-  "initial_explanation": "Community A has urgent vegetable demand, sufficient capacity, compatible receiving hours, and the shortest feasible simulated route.",
-  "rematch_candidates": ["COM-C", "COM-D"],
-  "rematch_explanation": "Community D accepts vegetables, has enough remaining capacity, is open, and can receive the remaining food before the deadline."
-}

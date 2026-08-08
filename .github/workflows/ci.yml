@@ -9,6 +9,20 @@ jobs:
   quality-gate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: foodflow
+          POSTGRES_USER: foodflow
+          POSTGRES_PASSWORD: foodflow-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U foodflow -d foodflow"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -24,9 +38,11 @@ jobs:
             frontend/package-lock.json
       - name: Install backend dependencies from lock
         run: uv sync --all-extras --locked
-      - name: Install root test dependencies from lock
+      - name: Install root dependencies from lock
         run: npm ci
       - name: Install frontend dependencies from lock
         run: npm --prefix frontend ci
-      - name: Run the same quality gate as local development
+      - name: Run the foundation quality gate
+        env:
+          DATABASE_URL: postgresql+psycopg://foodflow:foodflow-ci@localhost:5432/foodflow
         run: ./scripts/quality_gate.sh

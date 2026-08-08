@@ -1,27 +1,16 @@
 [project]
 name = "foodflow-backend"
 version = "0.1.0"
-description = "FoodFlow Auckland — autonomous surplus-food redistribution MVP"
+description = "FastAPI and PostgreSQL foundation for the FoodFlow platform"
 requires-python = ">=3.12"
 
 dependencies = [
-    # Web
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
-    # Persistence
     "sqlalchemy>=2.0",
-    # Agent framework.
-    # Compatible range, not an exact pin: ADK shipped 2.6.2 and 2.6.3 three days
-    # apart and had a breaking 2.0 this year. The lock file supplies exactness.
-    # See docs/phase_review_findings.md R-30.
-    "google-adk>=2.6.3,<2.7",
-    # LiteLLM reaches the tree via google-adk[eval] regardless of whether we use
-    # it for model calls, and `agent: core_eval` is a required gate.
-    # 1.82.7 and 1.82.8 are COMPROMISED releases (credential stealer).
-    # See docs/assumption_audit.md A-2 and docs/phase_review_findings.md R-6.
-    "litellm>=1.84",
+    "psycopg[binary]>=3.2",
 ]
 
 [project.optional-dependencies]
@@ -48,7 +37,7 @@ src = ["backend"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "SIM", "ARG", "PTH", "RUF"]
 ignore = [
-    "B008", # FastAPI Depends() in defaults is the framework idiom
+    "B008", # FastAPI Depends() in defaults is the framework idiom.
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -62,17 +51,6 @@ files = ["backend/app"]
 explicit_package_bases = true
 mypy_path = "."
 
-[[tool.mypy.overrides]]
-# google.adk and litellm do not ship complete type information.
-# Scoped to the adapter boundary only, per clean_code_spec 6.1.
-module = ["google.adk.*", "litellm.*"]
-ignore_missing_imports = true
-
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 asyncio_mode = "auto"
-markers = [
-    "spike: P0 de-risking measurements; skipped by default, unskip to re-measure",
-    "live: requires a live DEEPSEEK_API_KEY",
-]
-addopts = "-m 'not spike and not live'"
