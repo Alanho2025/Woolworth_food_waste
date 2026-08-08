@@ -51,7 +51,7 @@ from backend.app.contracts.core import (
 from backend.app.domain.clock import Clock
 from backend.app.domain.errors import EligibilityError, ErrorCode, FoodFlowError
 from backend.app.domain.ports import RouteSimulator, UnitOfWork
-from backend.app.seed.data import STORE_ID, STORE_LOCATION
+from backend.app.seed.data import STORE_LOCATIONS
 
 UowFactory = Callable[[], UnitOfWork]
 
@@ -237,13 +237,14 @@ class FoodFlowApiService:
         self._clock = clock
 
     def create_donation(self, request: CreateDonationRequest) -> CreateDonationResponse:
-        if request.store_id != STORE_ID:
+        store_location = STORE_LOCATIONS.get(request.store_id)
+        if store_location is None:
             raise EligibilityError(ErrorCode.NOT_FOUND, f"Unknown store {request.store_id}")
         donation_id = _new_id("DON")
         donation = DonationRequest(
             donation_id=donation_id,
             store_id=request.store_id,
-            store_location=STORE_LOCATION,
+            store_location=store_location,
             pickup_window=request.pickup_window,
             items=request.items,
             handling_notes=request.handling_notes,

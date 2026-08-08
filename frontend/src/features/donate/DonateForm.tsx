@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight,
-  Braces,
   Check,
   Clock3,
   Leaf,
@@ -11,7 +10,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,6 +18,11 @@ import type {
   StartMatchResponse,
 } from "@/shared/api/client";
 import { useCreateDonationMutation } from "@/shared/api/queries";
+import {
+  CBD_WOOLWORTHS_STORES,
+  DEFAULT_CBD_WOOLWORTHS_STORE,
+  findWoolworthsStore,
+} from "@/shared/data/woolworthsStores";
 
 const awareDateTime = z
   .string()
@@ -74,7 +77,7 @@ const donationFormSchema = z
 type DonationFormValues = z.infer<typeof donationFormSchema>;
 
 const blankValues: DonationFormValues = {
-  store_id: "WW-MT-EDEN",
+  store_id: DEFAULT_CBD_WOOLWORTHS_STORE.id,
   food_name: "",
   category: "vegetables",
   quantity: 60,
@@ -124,10 +127,7 @@ export function DonateForm({ onStarted }: DonateFormProps) {
     mode: "onChange",
   });
   const values = useWatch({ control: form.control });
-  const preview = useMemo(
-    () => toRequest({ ...blankValues, ...values }),
-    [values],
-  );
+  const selectedStore = findWoolworthsStore(values.store_id);
 
   async function submit(validValues: DonationFormValues) {
     const { run } = await mutation.mutateAsync(toRequest(validValues));
@@ -202,9 +202,20 @@ export function DonateForm({ onStarted }: DonateFormProps) {
                 label="Woolworths store"
                 error={form.formState.errors.store_id?.message}
               >
-                <select {...form.register("store_id")}>
-                  <option value="WW-MT-EDEN">Woolworths Mount Eden</option>
+                <select
+                  aria-label="Woolworths store"
+                  aria-describedby="selected-store-address"
+                  {...form.register("store_id")}
+                >
+                  {CBD_WOOLWORTHS_STORES.map((store) => (
+                    <option key={store.id} value={store.id}>
+                      {store.name}
+                    </option>
+                  ))}
                 </select>
+                <small id="selected-store-address" className="store-address">
+                  {selectedStore.address}
+                </small>
               </Field>
               <Field
                 label="Food name"
@@ -341,33 +352,6 @@ export function DonateForm({ onStarted }: DonateFormProps) {
             </button>
           </div>
         </form>
-
-        <aside
-          className="json-panel panel"
-          aria-label="Live JSON request preview"
-        >
-          <div className="json-heading">
-            <div>
-              <span className="json-icon">
-                <Braces size={19} />
-              </span>
-              <div>
-                <span className="eyebrow">Live contract preview</span>
-                <h2>Donation request</h2>
-              </div>
-            </div>
-            <span className="valid-dot">P2 contract</span>
-          </div>
-          <pre data-testid="json-preview">
-            <code>{JSON.stringify(preview, null, 2)}</code>
-          </pre>
-          <div className="json-foot">
-            <span>
-              <i /> Updates as you type
-            </span>
-            <strong>POST /donations → /match</strong>
-          </div>
-        </aside>
       </div>
     </main>
   );

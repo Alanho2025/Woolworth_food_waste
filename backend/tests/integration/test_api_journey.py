@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from backend.app.config import AgentTransport, Settings
 from backend.app.main import create_app
-from backend.app.seed.data import COMMUNITY_A, COMMUNITY_D
+from backend.app.seed.data import COMMUNITY_A, COMMUNITY_D, STORE_ID, STORE_LOCATIONS
 from backend.app.seed.seed import seed
 
 
@@ -38,7 +38,7 @@ def api_client(tmp_path: Path) -> Iterator[TestClient]:
 def donation_payload() -> dict[str, Any]:
     return {
         "donation_id": "DON-PREVIEW-001",
-        "store_id": "WW-MT-EDEN",
+        "store_id": STORE_ID,
         "pickup_window": {
             "start": "2026-08-08T16:00:00+12:00",
             "end": "2026-08-08T17:00:00+12:00",
@@ -70,6 +70,23 @@ def await_succeeded(client: TestClient, run_id: str) -> tuple[dict[str, Any], li
         assert body["status"] in {"queued", "running"}, body
         time.sleep(0.01)
     raise AssertionError(f"Agent run {run_id} did not succeed; counts={observed_event_counts}")
+
+
+@pytest.mark.parametrize("store_id", tuple(STORE_LOCATIONS))
+def test_create_donation_resolves_each_cbd_store_to_its_authoritative_location(
+    api_client: TestClient,
+    store_id: str,
+) -> None:
+    payload = donation_payload()
+    payload["store_id"] = store_id
+
+    response = api_client.post("/donations", json=payload)
+
+    assert response.status_code == 201, response.text
+    donation = response.json()["donation"]
+    expected = STORE_LOCATIONS[store_id]
+    assert donation["store_id"] == store_id
+    assert donation["store_location"] == expected.model_dump()
 
 
 def test_complete_http_journey_auto_rematches_and_balances_all_sixty_kg(

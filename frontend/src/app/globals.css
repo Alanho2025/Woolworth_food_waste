@@ -388,7 +388,82 @@ a:focus-visible {
   height: 100%;
 }
 .map-water {
-  fill: #d9eaed;
+  fill: #dceff2;
+}
+.cbd-land {
+  fill: #f2f0e8;
+  stroke: #bfc9bc;
+  stroke-width: 2;
+}
+.cbd-park {
+  fill: #dfead9;
+  stroke: #cad8c4;
+  stroke-width: 1.5;
+}
+.cbd-road-casing,
+.cbd-road {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cbd-road-casing {
+  stroke: #d8d5cb;
+  stroke-width: 8;
+}
+.cbd-road {
+  stroke: #fffefa;
+  stroke-width: 5;
+}
+.cbd-road-casing.primary {
+  stroke-width: 11;
+}
+.cbd-road.primary {
+  stroke-width: 7.5;
+}
+.cbd-road-casing.motorway {
+  stroke: #d5b879;
+  stroke-width: 14;
+}
+.cbd-road.motorway {
+  stroke: #f4d994;
+  stroke-width: 9;
+}
+.cbd-label,
+.store-map-label {
+  paint-order: stroke;
+  stroke: rgba(255, 254, 250, 0.96);
+  stroke-linejoin: round;
+  text-anchor: middle;
+}
+.cbd-label {
+  fill: #748078;
+  stroke-width: 4px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+.cbd-label.water {
+  fill: #6f9299;
+  stroke: rgba(220, 239, 242, 0.94);
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 600;
+}
+.cbd-label.district {
+  fill: #53645c;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cbd-label.landmark {
+  fill: #637168;
+  font-size: 12px;
+}
+.cbd-label.road {
+  fill: #8a8e87;
+  font-size: 11px;
+  font-weight: 600;
 }
 .map-land {
   fill: #eef0e5;
@@ -408,10 +483,26 @@ a:focus-visible {
 .store-halo {
   fill: rgba(238, 123, 57, 0.2);
 }
+.store-halo.selected {
+  fill: rgba(226, 93, 27, 0.27);
+  stroke: rgba(226, 93, 27, 0.25);
+  stroke-width: 4;
+}
 .store-marker {
-  fill: var(--orange-600);
+  fill: #ec8b55;
   stroke: white;
   stroke-width: 3;
+}
+.store-marker.selected {
+  fill: var(--orange-600);
+  stroke-width: 4;
+}
+.store-map-label {
+  fill: #263c34;
+  stroke-width: 5px;
+  text-anchor: start;
+  font-size: 13px;
+  font-weight: 800;
 }
 .community-halo {
   fill: rgba(29, 107, 81, 0.15);
@@ -456,6 +547,10 @@ a:focus-visible {
   height: 8px;
   background: var(--orange-600);
   border-radius: 2px;
+}
+.legend-square.selected {
+  background: var(--orange-600);
+  box-shadow: 0 0 0 3px rgba(238, 123, 57, 0.18);
 }
 .legend-dot {
   width: 8px;
@@ -788,7 +883,7 @@ a:focus-visible {
 }
 .donate-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.72fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 17px;
   align-items: start;
 }
@@ -850,6 +945,11 @@ a:focus-visible {
   color: var(--ink-500);
   font-size: 8px;
   font-weight: 550;
+}
+.field > .store-address {
+  margin-top: -2px;
+  color: var(--forest-700);
+  font-size: 9px;
 }
 .field input,
 .field select,
@@ -1255,10 +1355,13 @@ a:focus-visible {
 .active-route {
   fill: none;
   stroke: var(--orange-500);
-  stroke-width: 9;
+  stroke-width: 11;
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 3px 4px rgba(216, 102, 43, 0.28));
+}
+.route-cbd-land {
+  fill: #f2f0e8;
 }
 .route-origin {
   fill: var(--forest-700);
@@ -1269,6 +1372,34 @@ a:focus-visible {
   fill: var(--orange-600);
   stroke: white;
   stroke-width: 5;
+}
+.route-place-label {
+  fill: #263c34;
+  stroke: rgba(255, 254, 250, 0.98);
+  stroke-width: 6px;
+  paint-order: stroke;
+  font-size: 20px;
+  font-weight: 850;
+}
+.route-driver-halo {
+  fill: rgba(20, 43, 72, 0.18);
+  stroke: rgba(20, 43, 72, 0.14);
+  stroke-width: 5;
+  animation: route-driver-pulse 1.8s ease-in-out infinite;
+}
+.route-driver-marker {
+  fill: #142b48;
+  stroke: white;
+  stroke-width: 4;
+}
+@keyframes route-driver-pulse {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 .driver-progress {
   position: absolute;

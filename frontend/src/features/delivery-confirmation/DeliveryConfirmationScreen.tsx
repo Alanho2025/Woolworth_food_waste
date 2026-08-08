@@ -57,27 +57,35 @@ export function DeliveryConfirmationView({
 }) {
   const router = useRouter();
   const mutation = useConfirmDeliveryMutation(detail.order.order_id);
-  const [outcome, setOutcome] = useState<Outcome>("partial");
+  const [outcome, setOutcome] = useState<Outcome>(
+    detail.order.is_rematch ? "full" : "partial",
+  );
   const [accepted, setAccepted] = useState(
-    Math.min(35, detail.order.quantity_kg),
+    detail.order.is_rematch
+      ? detail.order.quantity_kg
+      : Math.min(35, detail.order.quantity_kg),
   );
   const [reason, setReason] = useState("Recipient capacity changed at handoff");
   const previewRemaining = Math.max(0, detail.order.quantity_kg - accepted);
   async function confirm() {
-    const result = await mutation.mutateAsync({
-      outcome,
-      accepted_kg: accepted,
-      reason,
-    });
-    if (result.rematch_run_id)
-      router.push(
-        `/rematch/${encodeURIComponent(result.rematch_run_id)}?delivery=${encodeURIComponent(detail.order.order_id)}`,
-      );
-    else if (returnRun && previousDelivery)
-      router.push(
-        `/rematch/${encodeURIComponent(returnRun)}?delivery=${encodeURIComponent(previousDelivery)}`,
-      );
-    else router.push("/");
+    try {
+      const result = await mutation.mutateAsync({
+        outcome,
+        accepted_kg: accepted,
+        reason,
+      });
+      if (result.rematch_run_id)
+        router.push(
+          `/rematch/${encodeURIComponent(result.rematch_run_id)}?delivery=${encodeURIComponent(detail.order.order_id)}`,
+        );
+      else if (returnRun && previousDelivery)
+        router.push(
+          `/rematch/${encodeURIComponent(returnRun)}?delivery=${encodeURIComponent(previousDelivery)}`,
+        );
+      else router.push("/");
+    } catch {
+      // React Query exposes the API message through mutation.error below.
+    }
   }
   return (
     <div className="journey-stack">

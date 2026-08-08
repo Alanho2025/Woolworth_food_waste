@@ -67,12 +67,25 @@ def _nz(year: int, month: int, day: int, hour: int, minute: int) -> datetime:
 # Store and donation — the fixed demo scenario
 # --------------------------------------------------------------------------
 
-STORE_ID = "WW-MT-EDEN"
-STORE_LOCATION = Location(
-    name="Woolworths Mount Eden",
-    latitude=-36.8770,
-    longitude=174.7645,
-)
+STORE_ID = "WW-VICTORIA-ST-WEST"
+STORE_LOCATIONS: dict[str, Location] = {
+    STORE_ID: Location(
+        name="Woolworths Victoria Street West",
+        latitude=-36.8486838,
+        longitude=174.7646849,
+    ),
+    "WW-AUCKLAND-CITY": Location(
+        name="Woolworths Auckland City",
+        latitude=-36.84525,
+        longitude=174.77281,
+    ),
+    "WW-METRO-ALBERT-ST": Location(
+        name="Woolworths Metro Albert Street",
+        latitude=-36.84390,
+        longitude=174.76523,
+    ),
+}
+STORE_LOCATION = STORE_LOCATIONS[STORE_ID]
 
 DONATION_ID = "DON-001"
 DEMO_DELIVERY_DEADLINE = _nz(2026, 8, 8, 19, 0)
@@ -270,43 +283,42 @@ DRIVERS: tuple[Driver, ...] = (DRIVER_1, DRIVER_2, DRIVER_3)
 # --------------------------------------------------------------------------
 #
 # Keyed by (origin location name, destination location name). Each one follows
-# real Auckland arterials — Mt Eden Road, Dominion Road, Balmoral Road, Manukau
-# Road, Great South Road — rather than a geodesic, so the line on the map bends
+# real Auckland arterials — Queen Street, Symonds Street, Dominion Road, Manukau
+# Road and Great South Road — rather than a geodesic, so the line on the map bends
 # where a van would bend. Distance for the ETA is the summed length of these
 # points, which is also a more honest driving distance than crow-flies.
 # See docs/phase_review_findings.md R-19.
 
 ROUTE_POLYLINES: dict[tuple[str, str], tuple[Coordinate, ...]] = {
-    # Mt Eden Rd south -> Balmoral Rd west -> Dominion Rd south -> Mt Albert Rd
-    # -> White Swan Rd -> Stoddard Rd. The primary demo leg.
-    ("Woolworths Mount Eden", "Mount Roskill Community Kitchen"): (
-        (-36.8770, 174.7645),
-        (-36.8815, 174.7628),
-        (-36.8845, 174.7605),
-        (-36.8848, 174.7530),
+    # Victoria St -> Queen St -> Upper Queen St -> Dominion Rd -> Mt Albert Rd.
+    ("Woolworths Victoria Street West", "Mount Roskill Community Kitchen"): (
+        (-36.8486838, 174.7646849),
+        (-36.8520, 174.7642),
+        (-36.8572, 174.7625),
+        (-36.8640, 174.7590),
+        (-36.8720, 174.7534),
         (-36.8852, 174.7462),
         (-36.8925, 174.7440),
         (-36.8990, 174.7425),
         (-36.9040, 174.7405),
         (-36.9082, 174.7387),
     ),
-    # Mt Eden Rd north -> Symonds St -> Newton Rd -> Karangahape Rd -> Ponsonby Rd.
-    ("Woolworths Mount Eden", "Ponsonby Family Support Centre"): (
-        (-36.8770, 174.7645),
-        (-36.8722, 174.7638),
-        (-36.8680, 174.7625),
-        (-36.8640, 174.7602),
-        (-36.8615, 174.7570),
-        (-36.8598, 174.7520),
-        (-36.8588, 174.7482),
-        (-36.8570, 174.7470),
+    # Victoria St west -> Hobson St -> Victoria Park -> Ponsonby Rd.
+    ("Woolworths Victoria Street West", "Ponsonby Family Support Centre"): (
+        (-36.8486838, 174.7646849),
+        (-36.8485, 174.7595),
+        (-36.8480, 174.7540),
+        (-36.8495, 174.7500),
+        (-36.8525, 174.7473),
         (-36.8555, 174.7460),
     ),
-    # Mt Eden Rd -> Grange Rd -> Manukau Rd -> Royal Oak roundabout -> Onehunga Mall.
-    ("Woolworths Mount Eden", "Onehunga Foodbank"): (
-        (-36.8770, 174.7645),
-        (-36.8820, 174.7660),
-        (-36.8862, 174.7700),
+    # Queen St -> Symonds St -> Manukau Rd -> Royal Oak -> Onehunga Mall.
+    ("Woolworths Victoria Street West", "Onehunga Foodbank"): (
+        (-36.8486838, 174.7646849),
+        (-36.8530, 174.7650),
+        (-36.8590, 174.7665),
+        (-36.8660, 174.7718),
+        (-36.8750, 174.7770),
         (-36.8900, 174.7770),
         (-36.8960, 174.7808),
         (-36.9035, 174.7830),
@@ -314,11 +326,14 @@ ROUTE_POLYLINES: dict[tuple[str, str], tuple[Coordinate, ...]] = {
         (-36.9160, 174.7828),
         (-36.9230, 174.7830),
     ),
-    # Mt Eden Rd -> Grange Rd -> Greenlane West -> Greenlane East -> Great South Rd.
-    ("Woolworths Mount Eden", "Ellerslie Community Pantry"): (
-        (-36.8770, 174.7645),
-        (-36.8815, 174.7662),
-        (-36.8858, 174.7712),
+    # Queen St -> Grafton Bridge -> Khyber Pass -> Great South Rd.
+    ("Woolworths Victoria Street West", "Ellerslie Community Pantry"): (
+        (-36.8486838, 174.7646849),
+        (-36.8530, 174.7650),
+        (-36.8580, 174.7685),
+        (-36.8620, 174.7750),
+        (-36.8700, 174.7815),
+        (-36.8810, 174.7860),
         (-36.8895, 174.7790),
         (-36.8918, 174.7880),
         (-36.8938, 174.7960),
@@ -341,6 +356,19 @@ ROUTE_POLYLINES: dict[tuple[str, str], tuple[Coordinate, ...]] = {
         (-36.8985, 174.8090),
     ),
 }
+
+# The three CBD stores join the same arterial network within a few blocks. Keep
+# each configured store routable while preserving one reviewed road-shaped tail
+# per destination.
+for _store_id, _store in STORE_LOCATIONS.items():
+    if _store_id == STORE_ID:
+        continue
+    for _community in COMMUNITIES:
+        _base = ROUTE_POLYLINES[(STORE_LOCATION.name, _community.location.name)]
+        ROUTE_POLYLINES[(_store.name, _community.location.name)] = (
+            (_store.latitude, _store.longitude),
+            *_base[1:],
+        )
 
 
 # --------------------------------------------------------------------------

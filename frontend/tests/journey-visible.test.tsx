@@ -369,6 +369,18 @@ describe("P6/P7 visible journey", () => {
     render(<DriverRouteView detail={previous} />);
 
     expect(screen.getByText("Simulated route")).toBeVisible();
+    const originMarker = screen.getByTestId("route-origin-marker");
+    const destinationMarker = screen.getByTestId("route-destination-marker");
+    const visualSeparation = Math.hypot(
+      Number(destinationMarker.getAttribute("cx")) -
+        Number(originMarker.getAttribute("cx")),
+      Number(destinationMarker.getAttribute("cy")) -
+        Number(originMarker.getAttribute("cy")),
+    );
+    expect(visualSeparation).toBeGreaterThan(450);
+    expect(
+      screen.getByRole("img", { name: "Simulated driver position · 62%" }),
+    ).toBeVisible();
     expect(screen.getByTestId("driver-panel")).toHaveTextContent("60 kg");
     await user.click(
       screen.getByRole("button", { name: "Read instructions aloud" }),
@@ -427,6 +439,23 @@ describe("P6/P7 visible journey", () => {
     expect(push).toHaveBeenCalledWith("/rematch/RUN-REMATCH?delivery=ORD-A");
   });
 
+  it("contains confirmation API failures without navigating", async () => {
+    const user = userEvent.setup();
+    mutateAsync.mockRejectedValue(
+      new Error("Outcome partial does not match accepted quantity"),
+    );
+    render(<DeliveryConfirmationView detail={previous} />);
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Confirm and rematch remaining food",
+      }),
+    );
+
+    await waitFor(() => expect(mutateAsync).toHaveBeenCalledTimes(1));
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("renders eight B/C-aware rematch steps and only claims all rescued at delivered 60", () => {
     const { rerender } = render(
       <RematchView run={rematchRun()} previous={previous} />,
@@ -480,7 +509,7 @@ describe("P6/P7 visible journey", () => {
     expect(screen.getByText("All 60 kg Rescued")).toBeVisible();
   });
 
-  it("returns from the final D confirmation to the authoritative rematch run", async () => {
+  it("defaults the final D confirmation to a full 25 kg acceptance", async () => {
     const user = userEvent.setup();
     const replacement = {
       ...previous,
@@ -530,7 +559,10 @@ describe("P6/P7 visible journey", () => {
       />,
     );
 
-    await user.click(screen.getByRole("radio", { name: /full/i }));
+    expect(screen.getByRole("radio", { name: /full/i })).toBeChecked();
+    expect(
+      screen.getByRole("spinbutton", { name: /accepted quantity/i }),
+    ).toHaveValue(25);
     await user.click(
       screen.getByRole("button", {
         name: "Confirm and rematch remaining food",

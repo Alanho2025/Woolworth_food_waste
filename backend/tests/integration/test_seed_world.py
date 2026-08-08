@@ -19,7 +19,7 @@ from backend.app.seed.data import (
     DEMO_INVENTORY,
     DONATION_ID,
     ROUTE_POLYLINES,
-    STORE_LOCATION,
+    STORE_LOCATIONS,
 )
 from backend.app.seed.seed import seed
 
@@ -82,11 +82,15 @@ def test_seed_persists_complete_geography_times_capacity_and_driver_world(
 
 def test_every_displayed_route_pair_has_a_hand_traced_polyline_with_real_endpoints() -> None:
     """STORE->A/B/C/D AND A->D -> inspect seed -> road-shaped multi-point geometry."""
-    required_pairs = {(STORE_LOCATION.name, community.location.name) for community in COMMUNITIES}
+    required_pairs = {
+        (store.name, community.location.name)
+        for store in STORE_LOCATIONS.values()
+        for community in COMMUNITIES
+    }
     required_pairs.add((COMMUNITY_A.location.name, COMMUNITY_D.location.name))
 
     assert required_pairs <= ROUTE_POLYLINES.keys()
-    locations = {STORE_LOCATION.name: STORE_LOCATION}
+    locations = {store.name: store for store in STORE_LOCATIONS.values()}
     locations.update({community.location.name: community.location for community in COMMUNITIES})
     for origin_name, destination_name in required_pairs:
         points = ROUTE_POLYLINES[(origin_name, destination_name)]

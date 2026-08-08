@@ -7,9 +7,9 @@ import {
 import type { DashboardResponse } from "@/shared/api/client";
 
 const store = {
-  name: "Woolworths Mount Eden",
-  latitude: -36.877,
-  longitude: 174.7645,
+  name: "Woolworths Victoria Street West",
+  latitude: -36.8486838,
+  longitude: 174.7646849,
 };
 const communityLocation = {
   name: "Mount Roskill Community Kitchen",
@@ -24,7 +24,7 @@ const route = {
   origin: store,
   destination: communityLocation,
   polyline: [
-    [-36.877, 174.7645],
+    [-36.8486838, 174.7646849],
     [-36.9082, 174.7387],
   ],
   distance_km: 5.2,
@@ -34,7 +34,7 @@ const route = {
 } satisfies DashboardResponse["deliveries"][number]["route"];
 const donation = {
   donation_id: "DON-001",
-  store_id: "WW-MT-EDEN",
+  store_id: "WW-VICTORIA-ST-WEST",
   store_location: store,
   pickup_window: pickupWindow,
   items: [
@@ -196,6 +196,18 @@ describe("Dashboard", () => {
       }),
     ).toHaveTextContent("Active surplus");
     expect(screen.getByTestId("network-map")).toBeVisible();
+    expect(
+      screen.getByRole("img", {
+        name: "Woolworths Victoria Street West · selected donation store",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Woolworths Auckland City" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("img", { name: "Woolworths Metro Albert Street" }),
+    ).toBeVisible();
+    expect(screen.getByText("Auckland CBD Woolworths network")).toBeVisible();
     expect(screen.getByText(/OpenStreetMap contributors/)).toBeVisible();
     expect(screen.getByTestId("urgent-donation-card")).toHaveTextContent(
       "Fresh vegetables (mixed)",

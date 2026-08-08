@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DonateForm } from "@/features/donate/DonateForm";
@@ -31,7 +31,7 @@ const startedRun = {
 
 const expectedPreview = {
   donation_id: "DON-PREVIEW-001",
-  store_id: "WW-MT-EDEN",
+  store_id: "WW-VICTORIA-ST-WEST",
   pickup_window: {
     start: "2026-08-08T16:00:00+12:00",
     end: "2026-08-08T17:00:00+12:00",
@@ -49,10 +49,6 @@ const expectedPreview = {
   handling_notes: "Keep shaded and deliver in stackable produce crates.",
 };
 
-function preview(): unknown {
-  return JSON.parse(screen.getByTestId("json-preview").textContent ?? "");
-}
-
 describe("DonateForm", () => {
   beforeEach(() => {
     mutateAsync.mockReset();
@@ -63,14 +59,21 @@ describe("DonateForm", () => {
     });
   });
 
-  it("prefills the nine required fields and renders the Requirement section 4 JSON structure", async () => {
+  it("prefills the nine required fields without exposing the internal request contract", async () => {
     const user = userEvent.setup();
     render(<DonateForm />);
 
     await user.click(screen.getByTestId("prefill-demo"));
 
-    await waitFor(() => expect(preview()).toEqual(expectedPreview));
-    expect(screen.getByLabelText("Woolworths store")).toHaveValue("WW-MT-EDEN");
+    expect(
+      screen.queryByLabelText("Live JSON request preview"),
+    ).not.toBeInTheDocument();
+    const store = screen.getByLabelText("Woolworths store");
+    expect(store).toHaveValue("WW-VICTORIA-ST-WEST");
+    expect(within(store).getAllByRole("option")).toHaveLength(3);
+    expect(store).toHaveAccessibleDescription(
+      "19–25 Victoria Street West, Auckland CBD",
+    );
     expect(screen.getByLabelText("Food name")).toHaveValue("Fresh vegetables");
     expect(screen.getByLabelText("Category")).toHaveValue("vegetables");
     expect(screen.getByLabelText("Quantity")).toHaveValue(60);
@@ -87,6 +90,31 @@ describe("DonateForm", () => {
     );
     expect(screen.getByLabelText(/Notes/)).toHaveValue(
       "Keep shaded and deliver in stackable produce crates.",
+    );
+  });
+
+  it("submits the selected CBD store ID so the backend can resolve its authoritative location", async () => {
+    const user = userEvent.setup();
+    render(<DonateForm />);
+    await user.click(screen.getByTestId("prefill-demo"));
+
+    await user.selectOptions(
+      screen.getByLabelText("Woolworths store"),
+      "WW-AUCKLAND-CITY",
+    );
+
+    expect(
+      screen.getByLabelText("Woolworths store"),
+    ).toHaveAccessibleDescription("76 Quay Street, Auckland CBD");
+    await user.click(
+      screen.getByRole("button", { name: "Submit to AI Agent" }),
+    );
+
+    await waitFor(() =>
+      expect(mutateAsync).toHaveBeenCalledWith({
+        ...expectedPreview,
+        store_id: "WW-AUCKLAND-CITY",
+      }),
     );
   });
 
