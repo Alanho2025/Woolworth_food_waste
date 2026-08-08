@@ -1,4 +1,4 @@
-# FoodFlow Auckland
+# Kind KAI
 
 Autonomous surplus-food redistribution — a hackathon MVP connecting Woolworths stores, Auckland
 community organisations, and delivery drivers.

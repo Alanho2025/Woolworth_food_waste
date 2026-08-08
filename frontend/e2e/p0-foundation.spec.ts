@@ -5,14 +5,12 @@ test("P0 browser gate launches a real browser and evaluates a rendered page", as
 }) => {
   await page.setContent(`
     <main>
-      <h1>FoodFlow Auckland</h1>
+      <h1>Kind KAI</h1>
       <p data-testid="gate-status">P0 browser gate is running</p>
     </main>
   `);
 
-  await expect(
-    page.getByRole("heading", { name: "FoodFlow Auckland" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Kind KAI" })).toBeVisible();
   await expect(page.getByTestId("gate-status")).toHaveText(
     "P0 browser gate is running",
   );

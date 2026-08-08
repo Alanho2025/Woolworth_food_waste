@@ -29,13 +29,13 @@ export function AppShell({ children }: { readonly children: ReactNode }) {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <Link className="brand" href="/" aria-label="FoodFlow home">
+        <Link className="brand" href="/" aria-label="Kind KAI home">
           <span className="brand-mark">
             <HeartHandshake size={23} />
           </span>
           <span>
-            <strong>FoodFlow</strong>
-            <small>Auckland network</small>
+            <strong>Kind KAI</strong>
+            <small>Auckland food rescue</small>
           </span>
         </Link>
         <nav aria-label="Journey navigation">

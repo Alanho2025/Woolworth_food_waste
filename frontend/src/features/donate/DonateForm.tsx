@@ -142,7 +142,7 @@ export function DonateForm({ onStarted }: DonateFormProps) {
           <span className="eyebrow">New rescue operation</span>
           <h1>Create a food donation</h1>
           <p>
-            Structure the surplus once. FoodFlow checks live need, capacity and
+            Structure the surplus once. Kind KAI checks live need, capacity and
             delivery feasibility next.
           </p>
         </div>

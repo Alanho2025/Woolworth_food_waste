@@ -8,10 +8,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "FoodFlow Auckland",
-    template: "%s · FoodFlow Auckland",
+    default: "Kind KAI",
+    template: "%s · Kind KAI",
   },
-  description: "Auckland's live food rescue coordination network",
+  description: "Kind KAI — Auckland's live food rescue coordination network",
 };
 
 interface RootLayoutProps {
