@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # The single quality-gate entry point used locally and by CI.
 #
-# P0 intentionally leaves agent:core_eval red. Every stage still runs so an
-# empty or early-failing stage cannot conceal later failures.
+# Every stage still runs so an empty or early-failing stage cannot conceal
+# later failures.
 
 set -uo pipefail
 
@@ -57,11 +57,6 @@ secret_scan() {
   return 0
 }
 
-core_eval_placeholder() {
-  printf '%s\n' 'agent core_eval is not implemented until P3 (intentional P0 failure)'
-  return 1
-}
-
 run_stage 'backend:format' "${ruff_cmd[@]}" format --check backend
 run_stage 'backend:lint' "${ruff_cmd[@]}" check backend
 run_stage 'backend:typecheck' "${mypy_cmd[@]}" backend/app
@@ -76,7 +71,7 @@ run_stage 'agent:schema_validation' "${pytest_cmd[@]}" \
   backend/tests/spike/test_quality_gate_smoke.py -k schema_validation
 run_stage 'agent:bounded_loop_check' "${pytest_cmd[@]}" \
   backend/tests/spike/test_quality_gate_smoke.py -k bounded_loop
-run_stage 'agent:core_eval' core_eval_placeholder
+run_stage 'agent:core_eval' "${pytest_cmd[@]}" backend/tests/agent_eval
 
 run_stage 'architecture:forbidden_import_check' "${pytest_cmd[@]}" \
   backend/tests/test_architecture.py -k 'framework or outer_layer or checker'

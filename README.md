@@ -29,16 +29,16 @@ target behaviour until source, tests, and reproducible execution prove otherwise
 | Typed contracts, clock, error codes, ports | **Implemented** |
 | Configuration boundary | **Implemented** |
 | Toolchain, dependency pins | **Implemented** — `google-adk` 2.6.3, `litellm` 1.95.0, Python 3.12.13 |
-| Domain policies, application layer | **In progress** |
-| Persistence, seed world | **In progress** |
-| Agent layer, tools, DeepSeek adapter | **In progress** |
-| FastAPI surface | **In progress** |
-| Frontend, six screens | **In progress** |
-| Tests, quality gate, E2E harness | **In progress** |
+| Domain policies, application layer | **Implemented and tested** — allocation, acceptance, and remainder-only rematch transactions |
+| Persistence, seed world | **Implemented and tested** — deterministic SQLite seed with 3 completed and 1 independent in-flight delivery |
+| Agent layer, tools, DeepSeek adapter | **Implemented for the MVD** — 18 typed tools, bounded replay journey, incremental visible events, and a thinking-disabled live model factory. The full live Agent journey is configured but not reliability-tested |
+| FastAPI surface | **Implemented and tested** — typed donation, match, polling, delivery, confirmation/rematch, dashboard, health, errors, and restricted local CORS |
+| Frontend, six screens | **Implemented and browser-tested** — responsive Dashboard through terminal rematch success, generated OpenAPI client, and offline simulated maps |
+| Tests, quality gate, E2E harness | **Implemented** — all 15 stages pass; the real-server Playwright journey runs without API interception or core mocks |
 | Routing and ETA | **Simulated** — deterministic, hand-traced polylines, labelled in the UI |
-| Storage compatibility | **Planned as implemented + unit-tested, not exercised by the demo** (the scenario is entirely ambient) |
-| Deadline validation | **Planned as implemented + unit-tested, not meaningfully exercised** (the pinned clock clears the 19:00 deadline by hours) |
-| Live DeepSeek verification | **Not yet run** — the P0 spike is unmeasured; see `docs/issues/pending-issues.md` ISSUE-002 |
+| Storage compatibility | **Implemented and tested, not exercised by the demo** (the scenario is entirely ambient) |
+| Deadline validation | **Implemented and tested, not meaningfully exercised by the demo** (the pinned clock clears the 19:00 deadline by hours) |
+| Live DeepSeek verification | **P0 transport spike verified** — 30/30 successful turns in each arm; thinking-disabled returned 0 reasoning payloads (p95 2.460 s), while provider-default returned reasoning content in 60/60 responses. The P3 model factory is configured, but its full product journey is not live-provider verified; deterministic replay remains the demo path. See `docs/issues/pending-issues.md` ISSUE-002 |
 
 Nothing in this table may be upgraded on the strength of documentation alone.
 
@@ -76,14 +76,10 @@ uv venv --python 3.12
 source .venv/bin/activate
 uv pip install -e ".[dev]"
 
-# Seed the deterministic demo world
-python -m backend.app.seed.seed
-
-# Backend
-uvicorn backend.app.main:app --reload        # http://localhost:8000
-
-# Frontend
-cd frontend && npm install && npm run dev    # http://localhost:3000
+# From the repository root
+npm run data:migrate                         # schema + deterministic demo seed
+npm run dev:backend                          # http://localhost:8000
+npm run dev:frontend                         # http://localhost:3000
 ```
 
 Copy `.env_example` to `.env` and fill it in. **`.env` is git-ignored and must never be committed.**
@@ -97,8 +93,7 @@ run against real wall-clock time and every community is correctly closed outside
 
 ```bash
 ./scripts/quality_gate.sh    # every gate stage
-./scripts/e2e.sh             # both servers + seed + Playwright + teardown
-./scripts/reset_demo.sh      # back to the exact demo starting state
+./scripts/e2e.sh             # isolated DB + both servers + real Playwright journey + teardown
 ```
 
 ---

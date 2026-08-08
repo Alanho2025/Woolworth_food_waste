@@ -21,12 +21,9 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import TypeVar
 
 from backend.app.config import Settings
 from backend.app.domain.errors import AgentError, ErrorCode
-
-T = TypeVar("T")
 
 
 @dataclass(frozen=True)
@@ -46,7 +43,7 @@ class AgentBounds:
         )
 
 
-async def run_within_budget(work: Awaitable[T], bounds: AgentBounds) -> T:
+async def run_within_budget[T](work: Awaitable[T], bounds: AgentBounds) -> T:
     """Wall-clock bound on one whole Agent run.
 
     A hung run is the failure mode that cannot be survived on stage: a visible,
@@ -61,7 +58,7 @@ async def run_within_budget(work: Awaitable[T], bounds: AgentBounds) -> T:
         ) from exc
 
 
-async def call_tool_within_budget(
+async def call_tool_within_budget[T](
     tool_name: str,
     work: Callable[[], T],
     bounds: AgentBounds,
@@ -73,9 +70,7 @@ async def call_tool_within_budget(
     blocking the loop that is enforcing the run-level budget.
     """
     try:
-        return await asyncio.wait_for(
-            asyncio.to_thread(work), timeout=bounds.tool_timeout_seconds
-        )
+        return await asyncio.wait_for(asyncio.to_thread(work), timeout=bounds.tool_timeout_seconds)
     except TimeoutError as exc:
         raise AgentError(
             ErrorCode.TOOL_TIMEOUT,

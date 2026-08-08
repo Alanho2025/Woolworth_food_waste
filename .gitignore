@@ -26,8 +26,14 @@ test-results/
 
 # SQLite (local operational data, regenerated from seed)
 *.db
+*.db-shm
+*.db-wal
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
 *.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
 
 # OS / editor
 .DS_Store

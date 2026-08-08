@@ -100,6 +100,7 @@ class UnitOfWork(Protocol):
     drivers: DriverRepository
     deliveries: DeliveryRepository
     acceptances: AcceptanceRepository
+    agent_runs: AgentRunRepository
     audit: AuditRepository
 
     def __enter__(self) -> UnitOfWork: ...

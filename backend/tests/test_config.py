@@ -117,6 +117,42 @@ def test_every_setting_can_be_overridden_from_the_process_environment(
     assert settings.agent_max_llm_calls == 7
 
 
+def test_legacy_mixed_case_deepseek_key_environment_name_is_supported(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """LEGACY KEY NAME -> config boundary -> live key remains usable during migration."""
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setenv("DeepSeekAPI_KEY", "legacy-test-key-not-a-real-secret")
+
+    settings = Settings(_env_file=None, **REQUIRED_SETTINGS)  # type: ignore[call-arg]
+
+    assert settings.require_deepseek_key() == "legacy-test-key-not-a-real-secret"
+
+
+def test_standard_deepseek_key_name_takes_precedence_over_legacy_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """BOTH KEY NAMES -> config boundary -> documented uppercase name wins."""
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "standard-test-key-not-a-real-secret")
+    monkeypatch.setenv("DeepSeekAPI_KEY", "legacy-test-key-not-a-real-secret")
+
+    settings = Settings(_env_file=None, **REQUIRED_SETTINGS)  # type: ignore[call-arg]
+
+    assert settings.require_deepseek_key() == "standard-test-key-not-a-real-secret"
+
+
+def test_whitespace_legacy_deepseek_key_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """WHITESPACE LEGACY KEY -> live boundary -> no provider request is attempted."""
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setenv("DeepSeekAPI_KEY", "   ")
+    settings = Settings(_env_file=None, **REQUIRED_SETTINGS)  # type: ignore[call-arg]
+
+    with pytest.raises(RuntimeError):
+        settings.require_deepseek_key()
+
+
 # --------------------------------------------------------------------------
 # R-9 — DEMO_MODE and AGENT_TRANSPORT are independent
 # --------------------------------------------------------------------------

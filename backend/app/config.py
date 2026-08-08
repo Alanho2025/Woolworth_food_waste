@@ -10,7 +10,7 @@ from __future__ import annotations
 from enum import StrEnum
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,7 +20,12 @@ class AgentTransport(StrEnum):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        populate_by_name=True,
+    )
 
     # DeepSeek.
     #
@@ -34,7 +39,10 @@ class Settings(BaseSettings):
     # explicitly disabled -- see the adapter, and docs/assumption_audit.md A-1/D-5.
     # The key stays optional so replay mode genuinely works without a secret.
     # `require_deepseek_key` is the loud boundary when live transport is used.
-    deepseek_api_key: str = ""
+    deepseek_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("DEEPSEEK_API_KEY", "DeepSeekAPI_KEY"),
+    )
     deepseek_base_url: str
     deepseek_model: str
 

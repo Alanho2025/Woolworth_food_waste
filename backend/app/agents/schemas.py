@@ -13,7 +13,7 @@ stages three and four.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from backend.app.contracts.core import (
     CandidateAssessment,
@@ -22,17 +22,114 @@ from backend.app.contracts.core import (
     DonationInventory,
     DonationRequest,
     Driver,
+    FoodCategory,
+    Location,
     RouteLeg,
+    StorageType,
     TimeWindow,
 )
 from backend.app.domain.errors import ErrorCode
 
 
-class _ToolResult(BaseModel):
+class _ToolModel(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
-class ToolFailure(_ToolResult):
+class GetDonationInput(_ToolModel):
+    donation_id: str = Field(min_length=1)
+
+
+class ListCandidateCommunitiesInput(_ToolModel):
+    donation_id: str = Field(min_length=1)
+    required_kg: StrictInt = Field(gt=0)
+    origin: Location | None = None
+    declined_community_ids: tuple[str, ...] = ()
+    declined_order_id: str | None = None
+
+
+class GetCommunityCapacityInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+
+
+class GetAvailableDriversInput(_ToolModel):
+    donation_id: str = Field(min_length=1)
+    quantity_kg: StrictInt = Field(gt=0)
+
+
+class CalculateRouteInput(_ToolModel):
+    origin: Location
+    destination: Location
+
+
+class ValidateCategoryAcceptanceInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+    category: FoodCategory
+
+
+class ValidateStorageCompatibilityInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+    storage_type: StorageType
+
+
+class ValidateRecipientCapacityInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+    required_kg: StrictInt = Field(gt=0)
+
+
+class ValidateReceivingWindowInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+    route: RouteLeg
+
+
+class ValidateDriverCapacityInput(_ToolModel):
+    driver_id: str = Field(min_length=1)
+    required_kg: StrictInt = Field(gt=0)
+
+
+class ReserveInventoryInput(_ToolModel):
+    donation_id: str = Field(min_length=1)
+    quantity_kg: StrictInt = Field(gt=0)
+
+
+class ReserveRecipientCapacityInput(_ToolModel):
+    community_id: str = Field(min_length=1)
+    quantity_kg: StrictInt = Field(gt=0)
+
+
+class CreateDeliveryOrderInput(_ToolModel):
+    donation_id: str = Field(min_length=1)
+    community_id: str = Field(min_length=1)
+    quantity_kg: StrictInt = Field(gt=0)
+    driver_id: str = Field(min_length=1)
+    origin: Location
+
+
+class AssignDriverInput(_ToolModel):
+    order_id: str = Field(min_length=1)
+    driver_id: str = Field(min_length=1)
+
+
+class RecordPartialAcceptanceInput(_ToolModel):
+    order_id: str = Field(min_length=1)
+    accepted_kg: StrictInt = Field(ge=0)
+    reason: str = ""
+
+
+class ReleaseRemainingInventoryInput(_ToolModel):
+    order_id: str = Field(min_length=1)
+
+
+class CreateRematchedDeliveryInput(_ToolModel):
+    declined_order_id: str = Field(min_length=1)
+    community_id: str = Field(min_length=1)
+    remaining_kg: StrictInt = Field(gt=0)
+
+
+class UpdateDriverRouteInput(_ToolModel):
+    order_id: str = Field(min_length=1)
+
+
+class ToolFailure(_ToolModel):
     """Every tool failure the Agent sees, in one shape.
 
     AGENTS_FoodFlow.md 9 requires tool failures to be distinguishable as
@@ -46,19 +143,19 @@ class ToolFailure(_ToolResult):
     detail: str
 
 
-class DonationView(_ToolResult):
+class DonationView(_ToolModel):
     donation: DonationRequest
     inventory: DonationInventory
 
 
-class CandidateListResult(_ToolResult):
+class CandidateListResult(_ToolModel):
     """Complete facts for EVERY community, excluded ones included (R-18)."""
 
     required_kg: int
     candidates: list[CandidateAssessment]
 
 
-class CommunityCapacityView(_ToolResult):
+class CommunityCapacityView(_ToolModel):
     """Need and capacity, kept deliberately separate (Requirement.md 9)."""
 
     community_id: str
@@ -69,16 +166,16 @@ class CommunityCapacityView(_ToolResult):
     is_open: bool
 
 
-class DriverListResult(_ToolResult):
+class DriverListResult(_ToolModel):
     quantity_kg: int
     drivers: list[Driver]
 
 
-class RouteResult(_ToolResult):
+class RouteResult(_ToolModel):
     route: RouteLeg
 
 
-class ValidationResult(_ToolResult):
+class ValidationResult(_ToolModel):
     """The answer to one hard-constraint question.
 
     `ok=False` is a business outcome, not an error: the Agent is expected to use
@@ -90,7 +187,7 @@ class ValidationResult(_ToolResult):
     detail: str = ""
 
 
-class ReservationProjection(_ToolResult):
+class ReservationProjection(_ToolModel):
     """What the ledger and the recipient's capacity WILL look like after commit.
 
     The durable write happens atomically inside `create_delivery_order`, because
@@ -108,12 +205,12 @@ class ReservationProjection(_ToolResult):
     detail: str = ""
 
 
-class DeliveryOrderResult(_ToolResult):
+class DeliveryOrderResult(_ToolModel):
     order: DeliveryOrder
     inventory: DonationInventory
 
 
-class AcceptanceResultView(_ToolResult):
+class AcceptanceResultView(_ToolModel):
     order: DeliveryOrder
     planned_kg: int
     accepted_kg: int
@@ -123,6 +220,21 @@ class AcceptanceResultView(_ToolResult):
     inventory: DonationInventory
 
 
-class InventoryView(_ToolResult):
+class InventoryView(_ToolModel):
     inventory: DonationInventory
     detail: str = ""
+
+
+ToolResult = (
+    ToolFailure
+    | DonationView
+    | CandidateListResult
+    | CommunityCapacityView
+    | DriverListResult
+    | RouteResult
+    | ValidationResult
+    | ReservationProjection
+    | DeliveryOrderResult
+    | AcceptanceResultView
+    | InventoryView
+)

@@ -417,18 +417,22 @@ Routine decisions require no human approval.
 Implement only the tools required for the visible journey:
 
 - get_donation
-- list_community_options
-- get_community_need_and_capacity
-- validate_category_acceptance
-- validate_capacity
-- validate_receiving_window
+- list_candidate_communities
+- get_community_capacity
+- get_available_drivers
 - calculate_route
-- list_available_drivers
+- validate_category_acceptance
+- validate_storage_compatibility
+- validate_recipient_capacity
+- validate_receiving_window
+- validate_driver_capacity
+- reserve_inventory
+- reserve_recipient_capacity
 - create_delivery_order
 - assign_driver
 - record_partial_acceptance
-- return_remaining_inventory
-- create_rematch_order
+- release_remaining_inventory
+- create_rematched_delivery
 - update_driver_route
 
 Do not create a large tool library beyond this journey.

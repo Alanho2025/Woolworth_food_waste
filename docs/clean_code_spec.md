@@ -400,9 +400,11 @@ validate_driver_capacity
 reserve_inventory
 reserve_recipient_capacity
 create_delivery_order
+assign_driver
 record_partial_acceptance
 release_remaining_inventory
 create_rematched_delivery
+update_driver_route
 ```
 
 Do not add tools that are not needed by the pitch journey.
