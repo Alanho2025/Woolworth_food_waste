@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import sqlite3
 from datetime import datetime
+from hashlib import sha256
 from pathlib import Path
 
 from sqlalchemy import select
@@ -24,15 +26,22 @@ from backend.app.seed.seed import seed
 from .conftest import DatabaseHarness
 
 
-def test_running_seed_twice_produces_byte_identical_sqlite_database(tmp_path: Path) -> None:
-    """FRESH DB -> seed twice -> exact database bytes do not drift."""
+def canonical_dump_hash(path: Path) -> str:
+    """Hash SQLite's logical dump, excluding storage-header counters."""
+    with sqlite3.connect(path) as connection:
+        dump = "\n".join(connection.iterdump()).encode()
+    return sha256(dump).hexdigest()
+
+
+def test_running_seed_twice_produces_identical_canonical_database_state(tmp_path: Path) -> None:
+    """FRESH DB -> seed twice -> canonical schema and ordered domain rows do not drift."""
     path = tmp_path / "repeatable.db"
     url = f"sqlite:///{path}"
     seed(url)
-    first = path.read_bytes()
+    first = canonical_dump_hash(path)
 
     seed(url)
-    second = path.read_bytes()
+    second = canonical_dump_hash(path)
 
     assert second == first
 

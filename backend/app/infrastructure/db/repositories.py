@@ -222,6 +222,12 @@ class SqlAlchemyDonationRepository:
         )
         return _to_donation(row, item_rows)
 
+    def list_all(self) -> list[DonationRequest]:
+        donation_ids = self._session.scalars(
+            select(DonationRow.donation_id).order_by(DonationRow.donation_id)
+        )
+        return [donation for donation_id in donation_ids if (donation := self.get(donation_id))]
+
     def add(self, donation: DonationRequest) -> None:
         self._session.merge(
             DonationRow(
@@ -265,6 +271,22 @@ class SqlAlchemyDonationRepository:
             in_transit_kg=row.in_transit_kg,
             delivered_kg=row.delivered_kg,
         )
+
+    def list_inventories(self) -> list[DonationInventory]:
+        rows = self._session.scalars(
+            select(DonationInventoryRow).order_by(DonationInventoryRow.donation_id)
+        )
+        return [
+            DonationInventory(
+                donation_id=row.donation_id,
+                total_kg=row.total_kg,
+                available_kg=row.available_kg,
+                reserved_kg=row.reserved_kg,
+                in_transit_kg=row.in_transit_kg,
+                delivered_kg=row.delivered_kg,
+            )
+            for row in rows
+        ]
 
     def save_inventory(self, inventory: DonationInventory) -> None:
         """Persist the ledger.
@@ -388,6 +410,10 @@ class SqlAlchemyDriverRepository:
     def __init__(self, session: Session) -> None:
         self._session = session
 
+    def list_all(self) -> list[Driver]:
+        rows = self._session.scalars(select(DriverRow).order_by(DriverRow.driver_id))
+        return [_to_driver(row) for row in rows]
+
     def list_available(self) -> list[Driver]:
         rows = self._session.scalars(
             select(DriverRow).where(DriverRow.is_available.is_(True)).order_by(DriverRow.driver_id)
@@ -435,6 +461,10 @@ class SqlAlchemyDeliveryRepository:
             .where(DeliveryOrderRow.donation_id == donation_id)
             .order_by(DeliveryOrderRow.order_id)
         )
+        return [_to_delivery_order(row) for row in rows]
+
+    def list_all(self) -> list[DeliveryOrder]:
+        rows = self._session.scalars(select(DeliveryOrderRow).order_by(DeliveryOrderRow.order_id))
         return [_to_delivery_order(row) for row in rows]
 
     def save(self, order: DeliveryOrder) -> None:

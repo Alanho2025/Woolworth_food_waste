@@ -82,7 +82,7 @@ class StartMatchResponse(_ApiModel):
     run_id: str = Field(min_length=1)
     donation_id: str = Field(min_length=1)
     status: Literal[AgentRunStatus.QUEUED] = AgentRunStatus.QUEUED
-    kind: AgentRunKind
+    kind: Literal[AgentRunKind.INITIAL] = AgentRunKind.INITIAL
     transport: AgentRunTransport
 
 
@@ -124,8 +124,12 @@ class AgentRunResponse(_ApiModel):
     def terminal_fields_match_status(self) -> AgentRunResponse:
         if self.status is AgentRunStatus.SUCCEEDED and self.result is None:
             raise ValueError("a succeeded Agent run requires a typed result")
-        if self.status is AgentRunStatus.FAILED and self.error_code is None:
-            raise ValueError("a failed Agent run requires an error code")
+        if self.status is AgentRunStatus.SUCCEEDED and self.error_code is not None:
+            raise ValueError("a succeeded Agent run cannot carry an error code")
+        if self.status is AgentRunStatus.FAILED and (
+            self.error_code is None or self.result is not None
+        ):
+            raise ValueError("a failed Agent run requires an error and cannot carry a result")
         if self.status in {AgentRunStatus.QUEUED, AgentRunStatus.RUNNING} and (
             self.result is not None or self.error_code is not None
         ):
@@ -150,6 +154,11 @@ class AgentRunResponse(_ApiModel):
             raise ValueError("Agent run completion cannot precede its start")
         if self.result is not None and self.result.kind is not self.kind:
             raise ValueError("Agent run kind and result kind must agree")
+        if self.result is not None and self.result.inventory.donation_id != self.donation_id:
+            raise ValueError("Agent result inventory must belong to the run donation")
+        sequences = [event.sequence for event in self.events]
+        if sequences != sorted(set(sequences)):
+            raise ValueError("Agent event sequences must be unique and increasing")
         return self
 
 
@@ -167,12 +176,25 @@ class DeliveryDetailResponse(_ApiModel):
     destination: CommunityOrganisation
     inventory: DonationInventory
     status: DeliveryStatus
-    status_timeline: list[DeliveryStatusEvent]
+    status_timeline: list[DeliveryStatusEvent] = Field(min_length=1)
 
     @model_validator(mode="after")
     def duplicated_status_matches_order(self) -> DeliveryDetailResponse:
         if self.status is not self.order.status:
             raise ValueError("delivery detail status must match order.status")
+        if self.status_timeline[-1].status is not self.status:
+            raise ValueError("the final timeline status must match the delivery status")
+        sequences = [event.sequence for event in self.status_timeline]
+        if sequences != sorted(set(sequences)):
+            raise ValueError("delivery status sequences must be unique and increasing")
+        if self.donation.donation_id != self.order.donation_id:
+            raise ValueError("delivery and donation IDs must agree")
+        if self.inventory.donation_id != self.order.donation_id:
+            raise ValueError("delivery inventory must belong to the order donation")
+        if self.driver.driver_id != self.order.driver_id:
+            raise ValueError("delivery driver must match the order")
+        if self.destination.community_id != self.order.destination_community_id:
+            raise ValueError("delivery destination must match the order")
         return self
 
 
@@ -206,6 +228,12 @@ class ConfirmDeliveryResponse(_ApiModel):
     def rematch_presence_matches_remainder(self) -> ConfirmDeliveryResponse:
         if self.planned_kg != self.accepted_kg + self.remaining_kg:
             raise ValueError("planned kilograms must equal accepted plus remaining kilograms")
+        if self.delivery.quantity_kg != self.planned_kg:
+            raise ValueError("planned kilograms must match the delivery order")
+        if self.inventory.donation_id != self.delivery.donation_id:
+            raise ValueError("confirmation inventory must belong to the delivery donation")
+        if self.corrected_community.community_id != self.delivery.destination_community_id:
+            raise ValueError("corrected community must be the delivery destination")
         if (self.remaining_kg > 0) != (self.rematch_run_id is not None):
             raise ValueError("exactly one rematch run is required when food remains")
         return self
@@ -236,6 +264,7 @@ class AgentRunSummary(_ApiModel):
     status: AgentRunStatus
     kind: AgentRunKind
     transport: AgentRunTransport
+    latest_event: AgentStateEvent | None = None
 
 
 class GlobalDashboardResponse(_ApiModel):

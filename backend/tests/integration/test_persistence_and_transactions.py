@@ -9,7 +9,12 @@ from sqlalchemy import func, select
 
 from backend.app.application.allocate_donation import AllocationCommand
 from backend.app.application.record_acceptance import RecordAcceptance
-from backend.app.contracts.core import DeliveryOrder, DeliveryStatus, DonationInventory
+from backend.app.contracts.core import (
+    DeliveryOrder,
+    DeliveryStatus,
+    DonationInventory,
+    StorageType,
+)
 from backend.app.domain.clock import DEMO_NOW, PinnedClock
 from backend.app.domain.errors import EligibilityError, ErrorCode, QuantityIntegrityError
 from backend.app.infrastructure.db.models import AuditEventRow
@@ -17,6 +22,7 @@ from backend.app.seed.data import (
     COMMUNITY_A,
     COMMUNITY_B,
     COMMUNITY_C,
+    COMMUNITY_D,
     DONATION_ID,
     DRIVER_1,
     DRIVER_2,
@@ -197,6 +203,43 @@ def test_capacity_invalid_c_is_rejected_with_no_partial_writes_and_durable_failu
     assert raised.value.code is ErrorCode.RECIPIENT_CAPACITY_EXCEEDED
     assert_unallocated_demo_state(database, COMMUNITY_C.community_id)
     assert_one_durable_failure(database, ErrorCode.RECIPIENT_CAPACITY_EXCEEDED)
+
+
+def test_storage_invalid_recipient_is_rejected_with_no_partial_writes_and_durable_failure_audit(
+    database: DatabaseHarness,
+) -> None:
+    """VEGETABLE-COMPATIBLE D MADE FROZEN-ONLY -> typed storage failure and rollback."""
+    with database.uow() as uow:
+        community = uow.communities.get(COMMUNITY_D.community_id)
+        assert community is not None
+        uow.communities.save(
+            community.model_copy(update={"supported_storage": [StorageType.FROZEN]})
+        )
+        uow.commit()
+
+    with pytest.raises(EligibilityError) as raised:
+        database.allocator().execute(
+            AllocationCommand(
+                donation_id=DONATION_ID,
+                community_id=COMMUNITY_D.community_id,
+                quantity_kg=25,
+                driver_id=DRIVER_1.driver_id,
+                origin=STORE_LOCATION,
+            )
+        )
+
+    assert raised.value.code is ErrorCode.STORAGE_INCOMPATIBLE
+    with database.uow() as uow:
+        inventory = uow.donations.get_inventory(DONATION_ID)
+        persisted = uow.communities.get(COMMUNITY_D.community_id)
+        assert inventory is not None
+        assert persisted is not None
+        assert inventory.available_kg == 60
+        assert inventory.reserved_kg == 0
+        assert persisted.declared_capacity_kg == 30
+        assert persisted.remaining_capacity_kg == 30
+        assert uow.deliveries.list_for_donation(DONATION_ID) == []
+    assert_one_durable_failure(database, ErrorCode.STORAGE_INCOMPATIBLE)
 
 
 def test_unavailable_driver_is_rejected_with_no_partial_writes_and_durable_failure_audit(

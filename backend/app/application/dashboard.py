@@ -20,6 +20,7 @@ from backend.app.contracts.core import (
     DonationRequest,
     Driver,
 )
+from backend.app.domain.acceptance import AcceptanceRecord
 from backend.app.domain.errors import EligibilityError, ErrorCode
 from backend.app.domain.ports import UnitOfWork
 
@@ -79,24 +80,41 @@ class DashboardView:
             communities = uow.communities.list_all()
             deliveries = uow.deliveries.list_for_donation(donation_id)
             by_id = {c.community_id: c for c in communities}
+            acceptances = {
+                order.order_id: uow.acceptances.get(order.order_id) for order in deliveries
+            }
 
             return DashboardSnapshot(
                 donation=donation,
                 inventory=inventory,
                 deliveries=deliveries,
                 communities=communities,
-                drivers=uow.drivers.list_available(),
+                drivers=uow.drivers.list_all(),
                 capacity_alerts=[
-                    _alert(order, by_id[order.destination_community_id])
+                    _alert(
+                        order,
+                        by_id[order.destination_community_id],
+                        acceptances[order.order_id],
+                    )
                     for order in deliveries
                     if order.status is DeliveryStatus.PARTIALLY_ACCEPTED
                     and order.destination_community_id in by_id
+                    and acceptances[order.order_id] is not None
                 ],
             )
 
 
-def _alert(order: DeliveryOrder, community: CommunityOrganisation) -> CapacityAlert:
-    accepted = community.remaining_capacity_kg
+def _alert(
+    order: DeliveryOrder,
+    community: CommunityOrganisation,
+    acceptance: AcceptanceRecord | None,
+) -> CapacityAlert:
+    if acceptance is None:
+        raise EligibilityError(
+            ErrorCode.NOT_FOUND,
+            f"Partial delivery {order.order_id} has no acceptance record",
+        )
+    accepted = acceptance.accepted_kg
     return CapacityAlert(
         community_id=community.community_id,
         community_name=community.name,
