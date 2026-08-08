@@ -1,0 +1,32 @@
+name: quality-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.3"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - name: Install backend dependencies from lock
+        run: uv sync --all-extras --locked
+      - name: Install root test dependencies from lock
+        run: npm ci
+      - name: Install frontend dependencies from lock
+        run: npm --prefix frontend ci
+      - name: Run the same quality gate as local development
+        run: ./scripts/quality_gate.sh

@@ -231,6 +231,18 @@ A successful allocation transaction SHOULD include:
 
 If any step fails, the transaction MUST roll back.
 
+The success audit belongs to that same transaction and MUST roll back with it.
+A failure audit is different operational evidence: after the failed product
+transaction has rolled back, it MUST be written and committed through a separate
+connection so the rejected attempt remains diagnosable. Failure-audit persistence
+MUST NOT make any partial inventory, capacity, or delivery-order write durable.
+
+The success audit event belongs to that same transaction. A failed allocation attempt MUST be
+audited only after the failed transaction has rolled back, using an independent transaction, so
+the audit evidence survives without allowing any partial inventory, capacity, or delivery write
+to survive. Failure-audit persistence MUST NOT turn a failed business operation into success or
+include secrets, provider payloads, or hidden reasoning.
+
 Partial acceptance MUST:
 
 1. preserve the accepted quantity;

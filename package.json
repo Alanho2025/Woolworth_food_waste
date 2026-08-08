@@ -1,0 +1,18 @@
+{
+  "name": "foodflow-auckland",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "frontend:format": "npm --prefix frontend run format:check",
+    "frontend:lint": "npm --prefix frontend run lint",
+    "frontend:typecheck": "npm --prefix frontend run typecheck",
+    "frontend:test": "npm --prefix frontend test",
+    "journey:smoke": "playwright test p0-foundation.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": ">=1.51.1 <2"
+  }
+}

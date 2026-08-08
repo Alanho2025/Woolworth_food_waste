@@ -1,0 +1,35 @@
+# Secrets — never commit. .env holds the live DeepSeek API key.
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env_example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# SQLite (local operational data, regenerated from seed)
+*.db
+*.sqlite
+*.sqlite3
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
