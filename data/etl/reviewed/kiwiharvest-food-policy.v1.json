@@ -1,0 +1,112 @@
+{
+  "version": "kiwiharvest-food-policy.v1",
+  "as_of": "2026-08-09",
+  "timezone": "Pacific/Auckland",
+  "source_urls": [
+    "https://www.kiwiharvest.org.nz/donatefood",
+    "https://www.kiwiharvest.org.nz/supermarket",
+    "https://www.mpi.govt.nz/dmsdocument/3783/send",
+    "https://www.mpi.govt.nz/food-safety-home/how-read-food-labels"
+  ],
+  "truth_boundary": {
+    "data_origin": "reviewed",
+    "reference_only": true,
+    "route_ready": false,
+    "specific_site_acceptance": "unknown",
+    "specific_site_capability": "unknown",
+    "specific_site_capacity": "unknown",
+    "specific_site_need": "unknown",
+    "specific_site_receiving_window": "unknown"
+  },
+  "accepted_categories": [
+    {
+      "category": "ambient",
+      "examples": ["sealed cans", "jars", "rice", "pasta", "snacks", "beverages", "shelf-stable goods"],
+      "handling_boundaries": ["Keep seals intact; leaking, swollen, or unsafe packaging is rejected."]
+    },
+    {
+      "category": "fresh",
+      "examples": ["fresh produce", "bread", "bakery", "short-dated fresh groceries"],
+      "handling_boundaries": ["Inspect actual condition, packaging, usable life, and contamination before donation."]
+    },
+    {
+      "category": "frozen",
+      "examples": ["sealed frozen surplus", "safely frozen eligible meat"],
+      "handling_boundaries": ["Frozen food must remain frozen and requires recipient freezer capability, which is unknown here."]
+    },
+    {
+      "category": "prepared",
+      "examples": ["unopened deli products", "sandwiches", "wraps", "grab-and-go food prepared safely"],
+      "handling_boundaries": ["Prepared food needs date, allergen, sealed/opened, previously-served, and chilled-state evidence."]
+    }
+  ],
+  "handling_boundaries": [
+    {
+      "rule": "chilled_temperature",
+      "statement": "Chilled donated food should remain at or below 5C.",
+      "source_urls": ["https://www.mpi.govt.nz/dmsdocument/3783/send"]
+    },
+    {
+      "rule": "frozen_state",
+      "statement": "Frozen food should remain frozen.",
+      "source_urls": ["https://www.mpi.govt.nz/dmsdocument/3783/send"]
+    },
+    {
+      "rule": "packaging_condition",
+      "statement": "Damaged outer packaging is not automatically a rejection when the food remains sealed, but exposed, leaking, badly rusted, or swollen packaging is unsafe.",
+      "source_urls": [
+        "https://www.kiwiharvest.org.nz/supermarket",
+        "https://www.mpi.govt.nz/dmsdocument/3783/send"
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "condition": "recalled",
+      "statement": "Recalled food must not enter the donation flow.",
+      "source_urls": ["https://www.mpi.govt.nz/dmsdocument/3783/send"]
+    },
+    {
+      "condition": "opened",
+      "statement": "Opened food is not accepted.",
+      "source_urls": ["https://www.kiwiharvest.org.nz/supermarket"]
+    },
+    {
+      "condition": "previously_served",
+      "statement": "Previously served food is not accepted.",
+      "source_urls": ["https://www.kiwiharvest.org.nz/supermarket"]
+    },
+    {
+      "condition": "spoiled",
+      "statement": "Spoiled food is not accepted.",
+      "source_urls": ["https://www.kiwiharvest.org.nz/supermarket"]
+    }
+  ],
+  "date_mark_semantics": [
+    {
+      "mark": "best-before",
+      "statement": "Best-before is a quality/date-mark boundary and does not by itself establish the condition of a particular donated item.",
+      "source_urls": ["https://www.mpi.govt.nz/food-safety-home/how-read-food-labels"]
+    },
+    {
+      "mark": "use-by",
+      "statement": "Use-by is a safety-critical date boundary; the actual product condition and handling still require observation.",
+      "source_urls": ["https://www.mpi.govt.nz/food-safety-home/how-read-food-labels"]
+    },
+    {
+      "mark": "baked-on-or-baked-for",
+      "statement": "Bread and bakery date marks have their own meaning and must not be silently treated as use-by or best-before.",
+      "source_urls": ["https://www.mpi.govt.nz/food-safety-home/how-read-food-labels"]
+    }
+  ],
+  "operational_values_not_materialised": [
+    "current site-specific accepted categories",
+    "current site-specific capability",
+    "current capacity",
+    "current need",
+    "receiving window",
+    "receiving entrance",
+    "onboarding status",
+    "current participation"
+  ]
+}

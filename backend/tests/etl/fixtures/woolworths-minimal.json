@@ -1,0 +1,74 @@
+{
+  "Locator": {
+    "storelist": [
+      {
+        "storeDetail": {
+          "no": "20",
+          "name": "Twenty Woolworths",
+          "addressLine1": "20 Main Road",
+          "addressLine2": "null",
+          "suburb": "Testville",
+          "postcode": "618",
+          "state": "AUK",
+          "country": "NZ",
+          "latitude": "-36.9000",
+          "longtitude": "174.8000",
+          "division": "COUNTDOWN",
+          "manager": "must-not-leak",
+          "email": "must-not-leak@example.invalid",
+          "phone": "000",
+          "facilityList": ["fuel", "bakery"],
+          "extra1": "must-not-leak"
+        },
+        "tradingHours": {"monday": "ignored"}
+      },
+      {
+        "storeDetail": {
+          "no": "3",
+          "name": "Three Woolworths",
+          "addressLine1": "3 Main Road",
+          "addressLine2": null,
+          "suburb": "Testville",
+          "postcode": 204,
+          "state": "AUK",
+          "country": "NZ",
+          "latitude": -37.0,
+          "longtitude": 175.0,
+          "division": "COUNTDOWN",
+          "facilityList": ["bakery", "fuel"]
+        },
+        "tradingHours": {"tuesday": "ignored"}
+      },
+      {
+        "storeDetail": {
+          "no": "999",
+          "name": "Auckland Liquor",
+          "state": "AUK",
+          "division": "COUNTDOWN_LIQUOR",
+          "facilityList": []
+        },
+        "tradingHours": {"monday": "ignored"}
+      },
+      {
+        "storeDetail": {
+          "no": "998",
+          "name": "Auckland Pharmacy",
+          "state": "AUK",
+          "division": "COUNTDOWN_PHARMACY",
+          "facilityList": []
+        },
+        "tradingHours": {"monday": "ignored"}
+      },
+      {
+        "storeDetail": {
+          "no": "997",
+          "name": "Outside Auckland",
+          "state": "WGN",
+          "division": "COUNTDOWN",
+          "facilityList": []
+        },
+        "tradingHours": {"monday": "ignored"}
+      }
+    ]
+  }
+}

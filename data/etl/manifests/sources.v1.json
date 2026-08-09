@@ -1,0 +1,83 @@
+{
+  "version": "sources.v1",
+  "as_of": "2026-08-09",
+  "timezone": "Pacific/Auckland",
+  "sources": [
+    {
+      "source_id": "woolworths-store-locator",
+      "source_kind": "http_json",
+      "authority": "official Woolworths NZ store locator",
+      "url_or_path": "https://contact.woolworths.com.au/storelocator/service/corporateinfo/country/nz/division/all/tradinghours/current/weeks/1/json",
+      "expected_content_type": "application/json",
+      "max_snapshot_bytes": 10485760,
+      "scope": "Auckland region Woolworths supermarket records after AUK filter",
+      "as_of": "2026-08-09",
+      "license_note": "Public source boundary; Phase 1 must confirm redistribution and usage terms.",
+      "expected_count": {
+        "expected_count": 61,
+        "as_of": "2026-08-09",
+        "scope": "Auckland region stores after AUK filter"
+      }
+    },
+    {
+      "source_id": "mpi-recalled-products",
+      "source_kind": "http_markdown",
+      "authority": "official New Zealand Ministry for Primary Industries",
+      "url_or_path": "https://www.mpi.govt.nz/food-safety-home/food-recalls-and-complaints/recalled-food-products",
+      "retrieval_url": "https://r.jina.ai/https://www.mpi.govt.nz/food-safety-home/food-recalls-and-complaints/recalled-food-products",
+      "expected_content_type": "text/plain",
+      "max_snapshot_bytes": 10485760,
+      "scope": "Official recalled-food-products register at the snapshot as-of date",
+      "as_of": "2026-08-09",
+      "license_note": "Canonical authority content is an MPI public source; retrieval uses Jina Reader as an explicit text conversion route. MPI website content is CC BY 4.0 with Crown attribution except third-party material; absence from this index is not product-safety evidence.",
+      "expected_count": {
+        "expected_count": 660,
+        "as_of": "2026-08-09",
+        "scope": "Recall links in the 2016 through 2026 year sections"
+      }
+    },
+    {
+      "source_id": "kiwiharvest-branches-reviewed",
+      "source_kind": "reviewed_json",
+      "authority": "reviewed KiwiHarvest public branch evidence",
+      "url_or_path": "data/etl/reviewed/kiwiharvest-branches.v1.json",
+      "expected_content_type": "application/json",
+      "max_snapshot_bytes": 1048576,
+      "scope": "Reviewed Auckland branch identity and public relationship evidence",
+      "as_of": "2026-08-09",
+      "license_note": "Reviewed input; candidate branch facts remain bounded by the cited public evidence.",
+      "expected_count": {
+        "expected_count": 2,
+        "as_of": "2026-08-09",
+        "scope": "Auckland KiwiHarvest branches in the reviewed input"
+      }
+    },
+    {
+      "source_id": "recipient-candidates-reviewed",
+      "source_kind": "reviewed_csv",
+      "authority": "reviewed public recipient candidate evidence",
+      "url_or_path": "data/etl/reviewed/recipient-candidates.v1.csv",
+      "expected_content_type": "text/csv",
+      "max_snapshot_bytes": 10485760,
+      "scope": "Reviewed Auckland recipient candidate identities and public locations",
+      "as_of": "2026-08-09",
+      "license_note": "Reviewed input; candidate identity is not proof of current onboarding or participation.",
+      "expected_count": {
+        "expected_count": 60,
+        "as_of": "2026-08-09",
+        "scope": "Distinct recipient candidate identities in the reviewed input"
+      }
+    },
+    {
+      "source_id": "kiwiharvest-food-policy",
+      "source_kind": "reviewed_json",
+      "authority": "official KiwiHarvest accepted-food policy",
+      "url_or_path": "data/etl/reviewed/kiwiharvest-food-policy.v1.json",
+      "expected_content_type": "application/json",
+      "max_snapshot_bytes": 1048576,
+      "scope": "Reviewed accepted-food policy and safety limitations",
+      "as_of": "2026-08-09",
+      "license_note": "Reviewed input based on official public policy; it does not establish live capacity or acceptance for a specific delivery."
+    }
+  ]
+}

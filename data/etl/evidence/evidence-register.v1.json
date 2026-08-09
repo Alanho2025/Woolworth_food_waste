@@ -1,0 +1,185 @@
+{
+  "version": "evidence-register.v1",
+  "entries": [
+    {
+      "evidence_id": "ev-store-locator",
+      "title": "Woolworths NZ store locator source boundary",
+      "authority": "official Woolworths NZ",
+      "url_or_repo_path": "https://contact.woolworths.com.au/storelocator/service/corporateinfo/country/nz/division/all/tradinghours/current/weeks/1/json",
+      "as_of": "2026-08-09",
+      "supports": ["Auckland store identity and source key selection"],
+      "does_not_support": ["Pilot participation, donation state, loading-bay access, or current operational availability"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-mpi-recalls",
+      "title": "MPI recalled-products register",
+      "authority": "New Zealand Ministry for Primary Industries",
+      "url_or_repo_path": "https://www.mpi.govt.nz/food-safety-home/food-recalls-and-complaints/recalled-food-products",
+      "as_of": "2026-08-09",
+      "supports": ["The existence and dated scope of the official recall register"],
+      "does_not_support": ["Product safety outside the snapshot, absence from other registers, or a no-match without comparable identifiers"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-mpi-jina-reader",
+      "title": "Jina Reader retrieval route for the MPI recall register",
+      "authority": "Jina AI Reader documentation",
+      "url_or_repo_path": "https://jina.ai/reader/",
+      "as_of": "2026-08-09",
+      "supports": ["The explicit retrieval route converts a supplied URL to LLM-friendly text"],
+      "does_not_support": ["Direct MPI HTML semantics, MPI authority ownership, or product safety beyond the retrieved snapshot"],
+      "checked_at": "2026-08-10T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-mpi-copyright",
+      "title": "MPI website copyright and attribution boundary",
+      "authority": "New Zealand Ministry for Primary Industries",
+      "url_or_repo_path": "https://www.mpi.govt.nz/about-this-site/mpi-copyright",
+      "as_of": "2026-08-09",
+      "supports": ["MPI website content is CC BY 4.0 with Crown attribution except third-party material"],
+      "does_not_support": ["A blanket licence for third-party material or a product safety conclusion"],
+      "checked_at": "2026-08-10T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-kiwiharvest-branches",
+      "title": "KiwiHarvest public Auckland branch evidence",
+      "authority": "official KiwiHarvest public pages",
+      "url_or_repo_path": "https://www.kiwiharvest.org.nz/contact-us",
+      "as_of": "2026-08-09",
+      "supports": ["Public branch identity and dated operator relationship evidence"],
+      "does_not_support": ["Frontline recipient status, a receiving entrance, live capacity, or participation in this scenario"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-kiwiharvest-recipients",
+      "title": "Reviewed public recipient candidate evidence",
+      "authority": "reviewed public recipient sources",
+      "url_or_repo_path": "data/etl/reviewed/recipient-candidates.v1.csv",
+      "as_of": "2026-08-09",
+      "supports": ["Candidate identity, current-public relationship evidence, and source-backed public coordinates where explicitly listed"],
+      "does_not_support": ["Protected identity use, current onboarding, live capacity, receiving approval, or a navigation-ready entrance"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-food-policy",
+      "title": "KiwiHarvest accepted-food policy",
+      "authority": "official KiwiHarvest",
+      "url_or_repo_path": "https://www.kiwiharvest.org.nz/donatefood",
+      "as_of": "2026-08-09",
+      "supports": ["Broad accepted-food policy boundaries"],
+      "does_not_support": ["A specific product's current acceptance, quantity capacity, or recall clearance"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-mpi-donation",
+      "title": "MPI food donation safety guidance",
+      "authority": "New Zealand Ministry for Primary Industries",
+      "url_or_repo_path": "https://www.mpi.govt.nz/dmsdocument/3783/send",
+      "as_of": "2026-08-09",
+      "supports": ["Food donation safety and handling limitations"],
+      "does_not_support": ["A live inspection result, exact condition observation, or recipient capacity"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-mpi-labels",
+      "title": "MPI food-label date-mark guidance",
+      "authority": "New Zealand Ministry for Primary Industries",
+      "url_or_repo_path": "https://www.mpi.govt.nz/food-safety-home/how-read-food-labels",
+      "as_of": "2026-08-09",
+      "supports": ["Date-mark semantics used to bound scenario limitations"],
+      "does_not_support": ["The condition or safety of a particular donated item"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-gs1-barcode",
+      "title": "Woolworths NZ 2D barcode example",
+      "authority": "GS1 New Zealand",
+      "url_or_repo_path": "https://www.gs1nz.org/member-stories/woolworths-nz-2d-barcodes",
+      "as_of": "2026-08-09",
+      "supports": ["Barcode-present and barcode-absent scenario distinctions"],
+      "does_not_support": ["A product master lookup, a recall match, or product availability"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "ev-kiwiharvest-annual-report",
+      "title": "KiwiHarvest FY25 annual report",
+      "authority": "official KiwiHarvest historical report",
+      "url_or_repo_path": "https://www.kiwiharvest.org.nz/s/2025-KiwiHarvest_AnnualReport-Final.pdf",
+      "as_of": "2025-03-31",
+      "supports": ["Historical scale context and historical recipient relationship context"],
+      "does_not_support": ["Current partner status, current capacity, or participation in this scenario"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-source",
+      "title": "Current source model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/source.py",
+      "as_of": "2026-08-09",
+      "supports": ["SourceRecord and FoodProduct field names and current schema types"],
+      "does_not_support": ["External source content, observed values, or a future schema revision"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-user",
+      "title": "Current user model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/user.py",
+      "as_of": "2026-08-09",
+      "supports": ["User and OrganisationMembership field names and current schema types"],
+      "does_not_support": ["Real actor identity, authorization, or live participation"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-site",
+      "title": "Current site and location model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/site.py",
+      "as_of": "2026-08-09",
+      "supports": ["SiteLocation field names and public versus scenario location representation"],
+      "does_not_support": ["A public coordinate being a receiving entrance or operator-confirmed location"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-supply",
+      "title": "Current supply model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/supply.py",
+      "as_of": "2026-08-09",
+      "supports": ["Donation, item, condition, and status-event field names and current schema types"],
+      "does_not_support": ["Live donation quantities, condition observations, or recall results"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-recipient",
+      "title": "Current recipient model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/recipient.py",
+      "as_of": "2026-08-09",
+      "supports": ["Recipient capability, need, and availability field names and current schema types"],
+      "does_not_support": ["Current recipient capacity, receiving approval, or operator confirmation"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-matching",
+      "title": "Current matching and allocation model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/matching.py",
+      "as_of": "2026-08-09",
+      "supports": ["Matching, human decision, allocation, and status-event field names and current schema types"],
+      "does_not_support": ["A match recommendation, human approval, or operational allocation"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    },
+    {
+      "evidence_id": "schema-route",
+      "title": "Current route and delivery model schema",
+      "authority": "repository SQLAlchemy metadata",
+      "url_or_repo_path": "backend/app/models/route.py",
+      "as_of": "2026-08-09",
+      "supports": ["Route and delivery field names and current schema types"],
+      "does_not_support": ["Provider travel metrics, route optimality, vehicle availability, or real delivery events"],
+      "checked_at": "2026-08-09T00:00:00+12:00"
+    }
+  ]
+}

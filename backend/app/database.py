@@ -7,7 +7,7 @@ POSTGRES_DATABASE_URL_PREFIX = "postgresql+psycopg://"
 
 
 def create_db_engine(settings: Settings) -> Engine:
-    """Create a PostgreSQL engine without creating tables or running migrations."""
+    """Create a PostgreSQL engine without implicitly creating tables or running migrations."""
 
     if not settings.database_url.startswith(POSTGRES_DATABASE_URL_PREFIX):
         raise ValueError(

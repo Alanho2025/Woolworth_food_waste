@@ -1,0 +1,63 @@
+{
+  "version": "kiwiharvest-branches.v1",
+  "as_of": "2026-08-09",
+  "timezone": "Pacific/Auckland",
+  "source_urls": [
+    "https://www.kiwiharvest.org.nz/contact-us",
+    "https://www.kiwiharvest.org.nz/auckland-branch"
+  ],
+  "truth_boundary": {
+    "data_origin": "reviewed",
+    "reference_only": true,
+    "route_ready": false,
+    "point_status": "public_approximate_non_operational"
+  },
+  "branches": [
+    {
+      "branch_id": "kiwiharvest-highbrook",
+      "branch_name": "Auckland & HQ — Highbrook",
+      "public_address": "Unit G/70 Business Parade South, East Tāmaki, Auckland 2013",
+      "latitude": -36.939934,
+      "longitude": 174.875495,
+      "point_class": "A",
+      "coordinate_status": "public_approximate",
+      "relationship_evidence": "current-public",
+      "relationship_period": "current public branch evidence as of 2026-08-09",
+      "public_address_source_urls": ["https://www.kiwiharvest.org.nz/contact-us"],
+      "coordinate_provenance": "docs/research.md",
+      "coordinate_method": "ArcGIS World Geocoding Service",
+      "coordinate_source_urls": [
+        "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+      ],
+      "protected_or_sensitive": false,
+      "operational_point": false,
+      "is_entrance_or_loading_bay": false,
+      "reference_only": true,
+      "route_ready": false,
+      "limitation": "Public address or parcel approximation; not a verified entrance, loading bay, vehicle assignment, or overnight parking point."
+    },
+    {
+      "branch_id": "kiwiharvest-rosedale",
+      "branch_name": "North Shore — Rosedale",
+      "public_address": "13B Ride Way, Rosedale, Auckland 0632",
+      "latitude": -36.752635,
+      "longitude": 174.70298,
+      "point_class": "A",
+      "coordinate_status": "public_approximate",
+      "relationship_evidence": "current-public",
+      "relationship_period": "current public branch evidence as of 2026-08-09",
+      "public_address_source_urls": ["https://www.kiwiharvest.org.nz/contact-us"],
+      "coordinate_provenance": "docs/research.md",
+      "coordinate_method": "ArcGIS World Geocoding Service",
+      "coordinate_source_urls": [
+        "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+      ],
+      "protected_or_sensitive": false,
+      "operational_point": false,
+      "is_entrance_or_loading_bay": false,
+      "reference_only": true,
+      "route_ready": false,
+      "limitation": "Public address or parcel approximation; geocoding resolves the broader address rather than a verified unit entrance, loading bay, vehicle assignment, or overnight parking point."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": "demo-scenario.v1",
+  "profile": "realistic_demo",
+  "as_of": "2026-08-09",
+  "timezone": "Pacific/Auckland",
+  "seed_namespace": "kiwiharvest-realistic-demo-v1",
+  "source_ids": [
+    "woolworths-store-locator",
+    "mpi-recalled-products",
+    "kiwiharvest-branches-reviewed",
+    "recipient-candidates-reviewed",
+    "kiwiharvest-food-policy"
+  ],
+  "selectors": {
+    "donor_store": {
+      "source_key": "woolworths-nz-auckland-supermarket",
+      "region": "AUK",
+      "site_type": "supermarket"
+    },
+    "recipient_site": {
+      "current_public_relationship_evidence_required": true,
+      "protected_identity_allowed": false,
+      "public_coordinate_required": true
+    }
+  },
+  "required_cases": [
+    "barcode",
+    "no_barcode",
+    "known_capacity",
+    "unknown_capacity",
+    "successful_matching_branch",
+    "negative_matching_branch",
+    "human_match_decision_gate",
+    "human_route_decision_gate",
+    "public_location",
+    "scenario_operational_location"
+  ],
+  "route_topology": {
+    "stops": ["pickup", "receiving"],
+    "optimization_claim": false
+  }
+}

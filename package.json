@@ -9,6 +9,8 @@
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
+    "db:migrate": "uv run alembic upgrade head",
+    "db:migrate:check": "uv run alembic check",
     "dev:backend": "./scripts/dev_backend.sh",
     "dev:frontend": "npm --prefix frontend run dev",
     "backend:test": "uv run pytest backend/tests",

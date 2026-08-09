@@ -11,8 +11,8 @@ if [[ -x "$repo_root/.venv/bin/ruff" ]]; then ruff_bin="$repo_root/.venv/bin/ruf
 if [[ -x "$repo_root/.venv/bin/mypy" ]]; then mypy_bin="$repo_root/.venv/bin/mypy"; fi
 if [[ -x "$repo_root/.venv/bin/pytest" ]]; then pytest_bin="$repo_root/.venv/bin/pytest"; fi
 
-"$ruff_bin" format --check backend
-"$ruff_bin" check backend
+"$ruff_bin" format --check backend migrations
+"$ruff_bin" check backend migrations
 "$mypy_bin" backend/app
 "$pytest_bin" backend/tests
 
